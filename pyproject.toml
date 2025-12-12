@@ -1,0 +1,15 @@
+[project]
+name = "meu-tcc"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+  {name = "Ermeson Alves", email = "ermeson3alves@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.5.0",
+]
