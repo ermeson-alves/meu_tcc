@@ -1,2 +1,9 @@
 .venv
 .env
+
+!**README.md
+datasets/**
+
+**pycache**
+
+notebooks/lightning_logs*
