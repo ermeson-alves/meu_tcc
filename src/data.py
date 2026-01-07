@@ -59,7 +59,7 @@ class LOCCADataset(Dataset):
 
         # Independente de transformações, o formato esperado pelo Module é
         # objetos torch com float16/float32 para o volume e int8/(...) para a mascara..
-        volume = volume.astype(np.float32)
+        volume = volume.astype(np.float32) / 255.0
         new_mask = new_mask.astype(np.uint8)
 
         volume = torch.from_numpy(volume)
