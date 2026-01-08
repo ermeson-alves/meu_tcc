@@ -1,9 +1,9 @@
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from pathlib import Path
+from typing import List
 import numpy as np
 import torch
 import cv2
-from .utils.load_image_and_annotation import load_nifti, load_nrrd
 
 
 class LOCCADataset(Dataset):
@@ -21,21 +21,23 @@ class LOCCADataset(Dataset):
 
 
     Para utilizar esta classe, realizei antes um pré-processamento nos dados que, 
-    dentre outras coisas, converte cada slice para png.
+    dentre outras coisas, converte cada slice para png. 
     """
-    
-    def __init__(self, base_dir: Path, transform=None):
-        self.base_dir = base_dir
+    def __init__(self, file_paths: List[Path], transform=None):
+        """
+        Args:
+            file_paths: lista de caminhos para as slices em formato png.
+        """
+        self.file_paths = file_paths
         self.transform = transform
-        self.pngs_paths = sorted(base_dir.glob('images/*.png'))
 
     def __len__(self):
-        return len(self.pngs_paths)
+        return len(self.file_paths)
 
     def __getitem__(self, idx):
-        base_path = self.pngs_paths[idx]
+        base_path: Path = self.file_paths[idx]
         volume_file = str(base_path)
-        mask_file = self.base_dir / f'masks/{base_path.name}'
+        mask_file = base_path.parent.with_name("masks") / f'{base_path.name}'
         # rl_path = self.dataset_root / f'pngs_preprocessed/masks/rl_{base_path.name}'
         # ll_path = self.dataset_root / f'pngs_preprocessed/masks/ll_{base_path.name}'
 
