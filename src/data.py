@@ -38,13 +38,9 @@ class LOCCADataset(Dataset):
         base_path: Path = self.file_paths[idx]
         volume_file = str(base_path)
         mask_file = base_path.parent.with_name("masks") / f'{base_path.name}'
-        # rl_path = self.dataset_root / f'pngs_preprocessed/masks/rl_{base_path.name}'
-        # ll_path = self.dataset_root / f'pngs_preprocessed/masks/ll_{base_path.name}'
 
         volume = cv2.imread(volume_file, 0)  # leitura em tons de cinza
         mask = cv2.imread(mask_file, 0)
-        # right_lung = cv2.imread(rl_path, 0)  # leitura em tons de cinza
-        # left_lung = cv2.imread(ll_path, 0)  # leitura em tons de cinza
 
         assert volume.shape == mask.shape
 
@@ -59,14 +55,9 @@ class LOCCADataset(Dataset):
             volume = augmented["image"]
             new_mask = augmented["mask"]
 
-        # Independente de transformações, o formato esperado pelo Module é
-        # objetos torch com float16/float32 para o volume e int8/(...) para a mascara..
-        volume = volume.astype(np.float32) / 255.0
-        new_mask = new_mask.astype(np.uint8)
-
-        volume = torch.from_numpy(volume)
-        new_mask = torch.from_numpy(new_mask)
-
+        # O formato esperado pelo Module é objetos torch com 
+        # float16/float32 para o volume e int8/(...) para a mascara..
+        volume = volume / 255.0  # Isso normaliza os valores para que fiquem entre 0 e 1
 
         return {
             'volume': volume,

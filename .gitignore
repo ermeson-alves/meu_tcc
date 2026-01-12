@@ -7,3 +7,5 @@ datasets/**
 **pycache**
 
 notebooks/lightning_logs*
+
+results/**/**.ckpt
