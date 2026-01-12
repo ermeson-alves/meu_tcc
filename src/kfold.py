@@ -6,6 +6,7 @@ from typing import List, Callable
 from pathlib import Path
 import albumentations as A
 from torch.utils.data import DataLoader
+from lightning.pytorch.loggers import TensorBoardLogger
 import pytorch_lightning as pl
 from sklearn.model_selection import KFold
 from src.data import LOCCADataset
@@ -48,9 +49,10 @@ class KFoldExecutor:
             png_dir: Path,
             model_factory: Callable[[int, int], pl.LightningModule],
             trainer_callbacks: List,
-            trainer_logger,
             train_transform: A.Compose,
             test_transform: A.Compose,
+            log_dir: Path,
+            experiment_name: str,
     ):
         self.volumes_paths = volumes_paths
         self.png_dir = png_dir
@@ -58,8 +60,9 @@ class KFoldExecutor:
         self.test_transform = test_transform
         self.model_factory = model_factory
         self.trainer_callbacks = trainer_callbacks
-        self.trainer_logger = trainer_logger
         self.lightning_trainer = None
+        self.log_dir = log_dir
+        self.experiment_name = experiment_name
 
     
     def base_loop(self):
@@ -98,13 +101,17 @@ class KFoldExecutor:
                     train_dataset,
                     batch_size=BATCH_SIZE,
                     shuffle=True,
-                    num_workers=4,
+                    num_workers=6,
+                    persistent_workers=False,
+
                 )
 
                 test_loader = DataLoader(
                     test_dataset,
                     batch_size=BATCH_SIZE,
-                    num_workers=4
+                    num_workers=6,
+                    persistent_workers=False,
+
                 )
                 
                 # Treinamento do modelo utilizando Lighting Module
@@ -119,20 +126,24 @@ class KFoldExecutor:
 
                 # Limpeza
                 self.lightning_trainer = None
-                cleanup_memory(model, train_loader, test_loader)
+                cleanup_memory(model, train_loader, test_loader, train_dataset, test_dataset, pngs_paths_train, pngs_paths_test)
 
     
 
     def _train(self, model, train_dataloader):
         torch.set_float32_matmul_precision('high')
+        logger = TensorBoardLogger(
+            self.log_dir,
+            version=f'repet{model.repetition}/kfolditer{model.kfolditer}'
+        )
 
         self.lightning_trainer = pl.Trainer(
             max_epochs=NUM_EPOCHS,
-            limit_train_batches=10,
+            # limit_train_batches=10,  # debug
+            # limit_test_batches=5,    # debug
             enable_checkpointing=False,
-            limit_test_batches=5,
             callbacks=self.trainer_callbacks,
-            logger=self.trainer_logger
+            logger=logger
         )
 
         self.lightning_trainer.fit(
