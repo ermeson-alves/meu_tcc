@@ -96,11 +96,13 @@ class LOCCAModel(pl.LightningModule):
         )
         metrics = self.compute_metrics(tp, fp, fn, tn, stage)
         self.log_dict(
-            {f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_step_{k}": v for k,v in metrics.items()},
+            # {f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_step_{k}": v for k,v in metrics.items()},
+            {f"step_{k}": v for k,v in metrics.items()},
             prog_bar=True,
             batch_size=BATCH_SIZE)
         self.log(
-            f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_step_loss_{stage}",
+            # f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_step_loss_{stage}",
+            f"step_loss_{stage}",
             loss, prog_bar=True,
             batch_size=BATCH_SIZE)
 
@@ -122,13 +124,15 @@ class LOCCAModel(pl.LightningModule):
         metrics = self.compute_metrics(tp, fp, fn, tn, stage)
 
         self.log_dict(
-            {f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_epoch_{k}": v for k,v in metrics.items()},
+            # {f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_epoch_{k}": v for k,v in metrics.items()},
+            {f"epoch_{k}": v for k,v in metrics.items()},
             prog_bar=True,
             batch_size=BATCH_SIZE)
 
         avg_loss = torch.stack([x["loss"].detach().cpu() for x in outputs]).mean()
         self.log(
-            f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_epoch_avg_loss_{stage}",
+            # f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_epoch_avg_loss_{stage}",
+            f"epoch_avg_loss_{stage}",
             avg_loss,
             batch_size=BATCH_SIZE)
         
@@ -138,7 +142,8 @@ class LOCCAModel(pl.LightningModule):
     def on_train_end(self):
         training_time = time.time() - self.training_time
         self.logger.experiment.add_scalar(
-            f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_training_time",
+            # f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_training_time",
+            "training_time",
             training_time
         )
 
@@ -166,7 +171,8 @@ class LOCCAModel(pl.LightningModule):
     def on_test_end(self):
         test_time = time.time() - self.test_time
         self.logger.experiment.add_scalar(
-            f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_test_time",
+            # f"phase{self.phase}_repet{self.repetition}_kfolditer{self.kfolditer}_test_time",
+            "test_time",
             test_time
         )
  

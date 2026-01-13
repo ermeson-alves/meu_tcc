@@ -1,5 +1,5 @@
 import gc
-import time
+import pickle
 import torch
 import numpy as np
 from typing import List, Callable
@@ -73,15 +73,18 @@ class KFoldExecutor:
         # não contém slices de algum volume de treino.
         for repetition in range(1, NUM_REPT+1):
             for fold, (train_ids, test_ids) in enumerate(kfold.split(self.volumes_paths)):
-                # Print
                 print('_'*80)
                 print(f'FOLD {fold}')
 
+                #TODO: persistir esses paths aqui
                 volume_paths_train = self.volumes_paths[train_ids]
                 volume_paths_test = self.volumes_paths[test_ids]
             
                 pngs_paths_train = volumes_to_pngs_paths(volume_paths_train, self.png_dir)
                 pngs_paths_test = volumes_to_pngs_paths(volume_paths_test, self.png_dir)
+
+                # Persistindo infomação sobre a divisão atual dos dados:
+                self._save_division(pngs_paths_train, pngs_paths_test, repetition, fold, self.log_dir.parent)
 
                 
                 # Definição dos conjuntos de treino e teste.
@@ -134,6 +137,7 @@ class KFoldExecutor:
         torch.set_float32_matmul_precision('high')
         logger = TensorBoardLogger(
             self.log_dir,
+            name=self.experiment_name,
             version=f'repet{model.repetition}/kfolditer{model.kfolditer}'
         )
 
@@ -157,3 +161,26 @@ class KFoldExecutor:
             model,
             test_dataloader,
         )
+    
+    def _save_division(
+            self,
+            train_paths: List[Path],
+            test_paths: List[Path],
+            repetition: int,
+            fold:int,
+            results_dir: Path):
+
+        get_pkl_path = lambda s: f'pngs_paths/{self.experiment_name}/repet{repetition}/kfolditer{fold}_{s}.pkl'  # noqa: E731
+
+        train_pkl_path = results_dir / get_pkl_path('train')
+        train_pkl_path.parent.mkdir(exist_ok=True, parents=True)
+
+        with open(train_pkl_path, 'wb') as f:
+            pickle.dump(train_paths, f)
+        
+
+        test_pkl_path = results_dir / get_pkl_path('test')
+        test_pkl_path.parent.mkdir(exist_ok=True, parents=True)
+    
+        with open(test_pkl_path, 'wb') as f:
+            pickle.dump(test_paths, f)
