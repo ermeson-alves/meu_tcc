@@ -9,3 +9,5 @@ datasets/**
 notebooks/lightning_logs*
 
 results/**/**.ckpt
+
+results/log_gpu_nvidia-smi.txt
