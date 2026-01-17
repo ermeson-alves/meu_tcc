@@ -2,3 +2,4 @@ BATCH_SIZE = 8
 NUM_FOLDS = 5
 NUM_REPT = 3
 NUM_EPOCHS = 5
+ENCODER_NAME = "mobilenet_v2"
