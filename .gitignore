@@ -9,6 +9,7 @@ datasets/**
 notebooks/lightning_logs*
 
 results/**/**.ckpt
+results/phase_1.zip
 results/**/ckpts_backup.zip
 
 results/log_gpu_nvidia-smi.txt
