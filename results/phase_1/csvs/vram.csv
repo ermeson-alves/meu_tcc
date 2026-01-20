@@ -1,0 +1,5 @@
+model,1,2,3
+deeplabv3+_256x256_pngs_preproc,1718MiB,1702MiB,1703MiB
+segformer_256x256_pngs_preproc,1861MiB,1861MiB,1859MiB
+unet++_256x256_pngs_preproc,2355MiB,2341MiB,2324MiB
+dpt_256x256_pngs_preproc,3975MiB,4122MiB,4184MiB
