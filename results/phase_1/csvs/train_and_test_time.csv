@@ -1,5 +1,5 @@
 model,mean_training_time,std_training_time,mean_test_time,std_test_time
-deeplabv3+_256x256_pngs_preproc,612.8846,17.9193,10.3745,1.2053
-segformer_256x256_pngs_preproc,589.8325,17.3033,10.8527,1.2716
-unet++_256x256_pngs_preproc,1003.1259,28.678,15.4609,1.8059
-dpt_256x256_pngs_preproc,2657.017,121.5624,43.4095,4.5166
+segformer_256x256_pngs_preproc,9.8305,0.2884,10.8527,1.2716
+dpt_256x256_pngs_preproc,44.2836,2.026,43.4095,4.5166
+deeplabv3+_256x256_pngs_preproc,10.2147,0.2987,10.3745,1.2053
+unet++_256x256_pngs_preproc,16.7188,0.478,15.4609,1.8059
